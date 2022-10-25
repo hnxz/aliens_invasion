@@ -1,6 +1,8 @@
 import sys
+from time import sleep
 import pygame
 from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -17,6 +19,10 @@ class AlienInvasion:
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption("Alien Invasion")
+
+        #создание экземпляра для хранения игровой статистики.
+        self.stats = GameStats(self)
+
         self.ship = Ship(self.screen)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -30,6 +36,7 @@ class AlienInvasion:
             self.ship.update()
             self.bullets.update()
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
 
     def _check_events(self):
@@ -75,6 +82,27 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+        self._check_bullet_alien_collisions()
+
+    def _check_bullet_alien_collisions(self):
+        """Обработка коллизий снарядов с пришельцами"""
+        #удаление снарядов и пришельцев, участвующих в коллизиях.
+        # Проверка попаданий в пришельцев.
+        # При обнаружении попадания удалить снаряд и пришельца.
+        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        if not self.aliens:
+            # уничтожение существующих снарядов и создание нового флота.
+            self.bullets.empty()
+            self._create_fleet()
+
+    def _update_aliens(self):
+        """Обновляет позиции всех пришельцев во флоте"""
+        self._check_fleet_edges()
+        self.aliens.update()
+        #Проверка коллизий "пришелец - корабль".
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            print("Ship hit!!!")
+
     def _create_fleet(self):
         """Создание флота вторжения"""
         #Создание пришельца и вычисление количества пришельцев в ряду
@@ -103,8 +131,17 @@ class AlienInvasion:
         alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
         self.aliens.add(alien)
 
-
-
+    def _check_fleet_edges(self):
+        """Реагирует на достижение пришельцем края экрана."""
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+    def _change_fleet_direction(self):
+        """Опускает весь флот и меняет направление флота."""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1
 
     def _update_screen(self):
         # При каждом проходе цикла перересовывается экран.

@@ -12,3 +12,8 @@ class Settings():
         self.bullet_height = 15
         self.bullet_collor = (3, 174, 255)
         self.bullets_allowed = 3
+        self.alien_speed = 1
+        self.fleet_drop_speed = 10
+        #fleet_direction = 1 обозначает вправо, а -1 - влево.
+        self.fleet_direction = 1
+        self.ship_limit = 3
