@@ -33,10 +33,11 @@ class AlienInvasion:
         '''Запускает основной цикл игры'''
         while True:
             self._check_events()
-            self.ship.update()
-            self.bullets.update()
-            self._update_bullets()
-            self._update_aliens()
+            if self.stats.game_active:
+                self.ship.update()
+                self.bullets.update()
+                self._update_bullets()
+                self._update_aliens()
             self._update_screen()
 
     def _check_events(self):
@@ -101,7 +102,11 @@ class AlienInvasion:
         self.aliens.update()
         #Проверка коллизий "пришелец - корабль".
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            print("Ship hit!!!")
+            self._ship_hit()
+
+        #проверить, добрались ли пришельцы до нижнего края экрана.
+        self._check_aliens_bottom()
+
 
     def _create_fleet(self):
         """Создание флота вторжения"""
@@ -137,11 +142,42 @@ class AlienInvasion:
             if alien.check_edges():
                 self._change_fleet_direction()
                 break
+
+    def _check_aliens_bottom(self):
+        """Проверяет, добрались ли пришельцы до нижнего края экрана"""
+        screen_rect = self.screen.get_rect()
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                #происходит то же что при столкновении с кораблем
+                self._ship_hit()
+                break
+
+
     def _change_fleet_direction(self):
         """Опускает весь флот и меняет направление флота."""
         for alien in self.aliens.sprites():
             alien.rect.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
+
+    def _ship_hit(self):
+        """Обрабатывает столкновение корабля с пришельцем"""
+        if self.stats.ship_left > 0:
+
+        #уменьшение ship_left
+            self.stats.ship_left -= 1
+
+            #очистка списков пришельцев и снарядов.
+            self.aliens.empty()
+            self.bullets.empty()
+
+            #создание нового флота и размещение корабля в центре
+            self._create_fleet()
+            self.ship.center_ship()
+
+            #пауза
+            sleep(0.5)
+        else:
+            self.stats.game_active = False
 
     def _update_screen(self):
         # При каждом проходе цикла перересовывается экран.
