@@ -56,6 +56,7 @@ class AlienInvasion:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
 
+
     def _check_play_button(self, mouse_pos):
         """Запускает новую игру при нажатии кнопки Play"""
         if self.play_button.rect.collidepoint(mouse_pos):
