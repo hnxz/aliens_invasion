@@ -130,13 +130,13 @@ class AlienInvasion:
 
             #Увеличение уровня
             self.stats.level += 1
-            self.sb.prep_level()
+            self.sb.prep_level ()
 
         if collisions:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
-            self.check_high_score()
+            self.sb.check_high_score()
 
     def _update_aliens(self):
         """Обновляет позиции всех пришельцев во флоте"""
