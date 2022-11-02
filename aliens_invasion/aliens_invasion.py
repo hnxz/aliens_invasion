@@ -128,6 +128,16 @@ class AlienInvasion:
             self._create_fleet()
             self.settings.increase_speed()
 
+            #Увеличение уровня
+            self.stats.level += 1
+            self.sb.prep_level()
+
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_points * len(aliens)
+            self.sb.prep_score()
+            self.check_high_score()
+
     def _update_aliens(self):
         """Обновляет позиции всех пришельцев во флоте"""
         self._check_fleet_edges()
