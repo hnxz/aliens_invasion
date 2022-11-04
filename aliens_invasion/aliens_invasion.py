@@ -29,7 +29,6 @@ class AlienInvasion:
         self.ship = Ship(self.screen)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
-
         self._create_fleet()
 
         #создание кнопки Play
@@ -73,7 +72,9 @@ class AlienInvasion:
             #Очистка списков пришельцев и снарядов.
             self.aliens.empty()
             self.bullets.empty()
-
+            self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ships()
             #Создание нового флота и размещение корабля в центре.
             self._create_fleet()
             self.ship.center_ship()
@@ -205,8 +206,9 @@ class AlienInvasion:
         """Обрабатывает столкновение корабля с пришельцем"""
         if self.stats.ship_left > 0:
 
-        #уменьшение ship_left
+        #уменьшение ship_left и обновление панели счета
             self.stats.ship_left -= 1
+            self.sb.prep_ships()
 
             #очистка списков пришельцев и снарядов.
             self.aliens.empty()

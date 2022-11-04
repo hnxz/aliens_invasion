@@ -1,12 +1,14 @@
 import pygame
 from settings import Settings
-class Ship():
+from pygame.sprite import Sprite
+class Ship(Sprite):
     '''Класс управления кораблем.'''
-    def __init__(self,ai_game):
+    def __init__(self, ai_game):
         '''Инициализирует корабль и задает его начальную позицию'''
+        super().__init__()
         self.screen = ai_game
         self.settings = Settings()
-        self.screen_rect = ai_game.get_rect()
+        self.screen_rect = self.screen.get_rect()
         #Загружает изображение корабля и получает прямоугольник.
         self.image = pygame.image.load('images/ship.png')
         self.rect = self.image.get_rect()
